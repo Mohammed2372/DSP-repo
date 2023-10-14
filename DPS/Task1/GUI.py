@@ -223,10 +223,16 @@ continuous_button.pack()
 draw_button = tk.Button(frame, text="Draw your signal", command=lambda: switch_to_frame(frame2, frame))
 draw_button.pack()
 
-draw_button = tk.Button(frame, text="Read signal", command=lambda: switch_to_frame(frame3, frame))
-draw_button.pack()
+points_button = tk.Button(frame, text="discrete function", command=lambda: switch_to_frame(frame3, frame))
+points_button.pack()
 
 plot_button = tk.Button(frame2, text="Plot it", command=plot_wave)
 plot_button.pack(pady=20)
+
+frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
+frame2_back_button.pack()
+
+frame3_back_button = tk.Button(frame3, text="back", command=lambda: switch_to_frame(frame, frame3))
+frame3_back_button.pack()
 
 app.mainloop()
