@@ -25,7 +25,7 @@ def draw_wave():
     PhaseShift = float(PhaseShift_entry.get())
 
     global timelist
-    timelist = np.arange(0, 10, .1)
+    timelist = np.arange(0, 10, 0.01)
 
     if wave_type == "sin":
         ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
@@ -46,6 +46,7 @@ def plot_wave():
         plt.title("sin wave")
         plt.xlabel("Time(s)")
         plt.ylabel("AMP")
+        plt.axhline(color= "g")
         plt.show()
 
 
