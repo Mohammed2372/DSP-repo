@@ -8,6 +8,7 @@ from tkinter import filedialog
 X_label = None
 file_path = None
 points = []
+timelist = np.arange(0, 10, .1)
 
 
 ### Functions
@@ -24,9 +25,6 @@ def draw_wave():
     SamplingFrequency = float(SamplingFrequency_entry.get())
     PhaseShift = float(PhaseShift_entry.get())
 
-    global timelist
-    timelist = np.arange(0, 10, .1)
-
     if wave_type == "sin":
         ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
     elif wave_type == "cos":
@@ -42,10 +40,21 @@ def plot_wave():
     ylist = draw_wave()
     if ylist is not None:
         plt.figure(num=0, dpi=120, figsize=(10, 4))
+        plt.subplot(2,1,1)
         plt.plot(timelist, ylist)
         plt.title("sin wave")
         plt.xlabel("Time(s)")
         plt.ylabel("AMP")
+        plt.axhline(color="g")
+        plt.grid(True)
+
+        plt.subplot(2,1,2)
+        plt.stem(timelist, ylist)
+        plt.title("sin wave")
+        plt.xlabel("Time(s)")
+        plt.ylabel("AMP")
+        plt.axhline(color="g")
+        plt.grid(True)
         plt.show()
 
 
@@ -159,14 +168,14 @@ app = tk.Tk()
 app.title("DPS")
 
 ### Frames
-frame = ttk.Frame(app, padding="20")
+frame = ttk.Frame(app, padding="40")
 frame.pack()
 
 frame2 = ttk.Frame(app, padding="20")
 frame2.pack()
 frame2.pack_forget()
 
-frame3 = tk.Frame(app)
+frame3 = ttk.Frame(app,padding="50")
 frame3.pack(side="bottom", pady=20)
 frame3.pack_forget()
 
@@ -211,28 +220,28 @@ re_enter_label.pack()
 ### buttons
 # Button to read and store the points
 read_button = tk.Button(frame3, text="Choose File", command=read_and_store_points)
-read_button.pack()
+read_button.pack(pady=10)
 
 # Buttons for displaying data in separate windows
 discrete_button = tk.Button(frame3, text="Display Discrete Graph", command=display_discrete)
-discrete_button.pack()
+discrete_button.pack(pady=10)
 
 continuous_button = tk.Button(frame3, text="Display Continuous Graph", command=display_continuous)
-continuous_button.pack()
+continuous_button.pack(pady=10)
 
 draw_button = tk.Button(frame, text="Draw your signal", command=lambda: switch_to_frame(frame2, frame))
-draw_button.pack()
+draw_button.pack(pady=10)
 
-points_button = tk.Button(frame, text="discrete function", command=lambda: switch_to_frame(frame3, frame))
-points_button.pack()
+points_button = tk.Button(frame, text="read points", command=lambda: switch_to_frame(frame3, frame))
+points_button.pack(pady=10)
 
-plot_button = tk.Button(frame2, text="Plot it", command=plot_wave)
-plot_button.pack(pady=20)
+plot_button = tk.Button(frame2, text="Plot it", command=plot_wave,padx=20)
+plot_button.pack(pady=10)
 
 frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
-frame2_back_button.pack()
+frame2_back_button.pack(pady=10)
 
 frame3_back_button = tk.Button(frame3, text="back", command=lambda: switch_to_frame(frame, frame3))
-frame3_back_button.pack()
+frame3_back_button.pack(pady=10)
 
 app.mainloop()
