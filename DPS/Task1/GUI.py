@@ -26,12 +26,12 @@ def draw_wave():
     SamplingFrequency = int(SamplingFrequency_entry.get())
     PhaseShift = float(PhaseShift_entry.get())
 
-    global timelist , digital
+    global timelist, digital
     timelist = np.arange(0, 10, 0.01)
 
     if SamplingFrequency != 0:
 
-        timelist = np.linspace(0, 10,(SamplingFrequency*10) )
+        timelist = np.linspace(0, 10, (SamplingFrequency * 10))
         digital = False
 
         if wave_type == "sin":
@@ -39,18 +39,17 @@ def draw_wave():
         elif wave_type == "cos":
             ylist = Amplitude * np.cos(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
         else:
-            display_error_message("Enter right data", 2)    # 2 for re enter message
+            display_error_message("Enter right data", 2)  # 2 for re-enter message
             ylist = None
 
     else:
         if wave_type == "sin":
-            ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency) * timelist + PhaseShift)
+            ylist = Amplitude * np.sin(2 * np.pi * AnalogFrequency * timelist + PhaseShift)
         elif wave_type == "cos":
-            ylist = Amplitude * np.cos(2 * np.pi * (AnalogFrequency) * timelist + PhaseShift)
+            ylist = Amplitude * np.cos(2 * np.pi * AnalogFrequency * timelist + PhaseShift)
         else:
-            display_error_message("Enter right data", 2)    # 2 for re enter message
+            display_error_message("Enter right data", 2)  # 2 for re-enter message
             ylist = None
-
 
     return ylist
 
@@ -65,7 +64,7 @@ def plot_wave():
             plt.title("wave")
             plt.xlabel("Time(s)")
             plt.ylabel("AMP")
-            plt.axhline(color= "g")
+            plt.axhline(color="g")
             plt.grid(True)
 
         else:
@@ -113,7 +112,7 @@ def read_points_and_metadata_from_file(file_path):
                     X_label = "Frequency"
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            display_error_message("An error occurred. Choose a file and try again.",3)
+            display_error_message("An error occurred. Choose a file and try again.", 3)
 
     return SignalType, IsPeriodic, points
 
@@ -182,7 +181,7 @@ def display_continuous():
     if points:
         plot_continuous(points)
     else:
-        display_error_message("You should choose a file first.",1)  # 1 for display error message
+        display_error_message("You should choose a file first.", 1)  # 1 for display error message
 
 
 # creating the app
@@ -197,7 +196,7 @@ frame2 = ttk.Frame(app, padding="20")
 frame2.pack()
 frame2.pack_forget()
 
-frame3 = ttk.Frame(app,padding="50")
+frame3 = ttk.Frame(app, padding="50")
 frame3.pack(side="bottom", pady=20)
 frame3.pack_forget()
 
@@ -257,7 +256,7 @@ draw_button.pack(pady=10)
 points_button = tk.Button(frame, text="read points", command=lambda: switch_to_frame(frame3, frame))
 points_button.pack(pady=10)
 
-plot_button = tk.Button(frame2, text="Plot it", command=plot_wave,padx=20)
+plot_button = tk.Button(frame2, text="Plot it", command=plot_wave, padx=20)
 plot_button.pack(pady=10)
 
 frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
