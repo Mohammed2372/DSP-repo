@@ -9,6 +9,7 @@ X_label = None
 file_path = None
 points = []
 timelist = np.arange(0, 10, .1)
+digital = True
 
 
 ### Functions
@@ -22,16 +23,34 @@ def draw_wave():
     wave_type = wave_entry.get()
     Amplitude = float(Amplitude_entry.get())
     AnalogFrequency = float(AnalogFrequency_entry.get())
-    SamplingFrequency = float(SamplingFrequency_entry.get())
+    SamplingFrequency = int(SamplingFrequency_entry.get())
     PhaseShift = float(PhaseShift_entry.get())
 
-    if wave_type == "sin":
-        ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
-    elif wave_type == "cos":
-        ylist = Amplitude * np.cos(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
+    global timelist , digital
+    timelist = np.arange(0, 10, 0.01)
+
+    if SamplingFrequency != 0:
+
+        timelist = np.linspace(0, 10,(SamplingFrequency*10) )
+        digital = False
+
+        if wave_type == "sin":
+            ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
+        elif wave_type == "cos":
+            ylist = Amplitude * np.cos(2 * np.pi * (AnalogFrequency / SamplingFrequency) * timelist + PhaseShift)
+        else:
+            display_error_message("Enter right data", 2)    # 2 for re enter message
+            ylist = None
+
     else:
-        display_error_message("Enter right data", 2)  # 2 for re-enter message
-        ylist = None
+        if wave_type == "sin":
+            ylist = Amplitude * np.sin(2 * np.pi * (AnalogFrequency) * timelist + PhaseShift)
+        elif wave_type == "cos":
+            ylist = Amplitude * np.cos(2 * np.pi * (AnalogFrequency) * timelist + PhaseShift)
+        else:
+            display_error_message("Enter right data", 2)    # 2 for re enter message
+            ylist = None
+
 
     return ylist
 
@@ -40,21 +59,24 @@ def plot_wave():
     ylist = draw_wave()
     if ylist is not None:
         plt.figure(num=0, dpi=120, figsize=(10, 4))
-        plt.subplot(2,1,1)
-        plt.plot(timelist, ylist)
-        plt.title("sin wave")
-        plt.xlabel("Time(s)")
-        plt.ylabel("AMP")
-        plt.axhline(color="g")
-        plt.grid(True)
+        if digital:
+            # plt.subplot(2,1,1)
+            plt.plot(timelist, ylist)
+            plt.title("wave")
+            plt.xlabel("Time(s)")
+            plt.ylabel("AMP")
+            plt.axhline(color= "g")
+            plt.grid(True)
 
-        plt.subplot(2,1,2)
-        plt.stem(timelist, ylist)
-        plt.title("sin wave")
-        plt.xlabel("Time(s)")
-        plt.ylabel("AMP")
-        plt.axhline(color="g")
-        plt.grid(True)
+        else:
+            # plt.subplot(2, 1, 2)
+            plt.stem(timelist, ylist)
+            plt.title("wave")
+            plt.xlabel("Time(s)")
+            plt.ylabel("AMP")
+            plt.axhline(color="g")
+            plt.grid(True)
+
         plt.show()
 
 
