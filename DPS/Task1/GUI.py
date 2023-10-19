@@ -4,12 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tkinter import filedialog
 
+from DPS.Task2 import add_signals
+
+# from DPS.Task2.add_signals import Add_Signals
+
 # Globals
 X_label = None
 file_path = None
-points = []
 timelist = np.arange(0, 10, .1)
+points = []
 digital = True
+points1, points2 = [], []
 
 
 ### Functions
@@ -161,11 +166,23 @@ def display_error_message(error_msg, choice):
         re_enter_label.config(text=error_msg)
 
 
-# Create a button to open files, read and store the points
+# open file, read and store the points
 def read_and_store_points():
     file_path = open_file_dialog()
     global signal_type, is_periodic, points
     signal_type, is_periodic, points = read_points_and_metadata_from_file(file_path)
+
+
+def read_and_store_points1():
+    file_path = open_file_dialog()
+    global signal1, isperiodic1, points1
+    signal1, isperiodic1, points1 = read_points_and_metadata_from_file(file_path)
+
+
+def read_and_store_points2():
+    file_path = open_file_dialog()
+    global signal2, isperiodic2, points2
+    signal2, isperiodic2, points2 = read_points_and_metadata_from_file(file_path)
 
 
 # Displaying the data discrete
@@ -177,11 +194,26 @@ def display_discrete():
 
 
 # Displaying the data continues
-def display_continuous():
-    if points:
-        plot_continuous(points)
+# Displaying the data continues
+def display_continuous(choice):
+    cl = add_signals.Add_Signals()
+    pointss = []  # Initialize an empty list
+    if choice == "+":
+        if points1 and points2:  # Check if both signals are loaded
+            pointss = cl.adding(points1, points2)
+            print("Added Points:", pointss)
+    elif choice == "-":
+        if points1 and points2:
+            pointss = cl.subtracting(points1, points2)
+            print("Subtracted Points:", pointss)
+    elif choice == 0:
+        if points:  # Check if a single signal is loaded
+            pointss = points
+
+    if pointss:  # Check if the list is not empty
+        plot_continuous(pointss)
     else:
-        display_error_message("You should choose a file first.", 1)  # 1 for display error message
+        display_error_message("No data to plot.", 1)
 
 
 # creating the app
@@ -189,8 +221,12 @@ app = tk.Tk()
 app.title("DPS")
 
 ### Frames
+frame0 = ttk.Frame(app, padding="50")
+frame0.pack()
+
 frame = ttk.Frame(app, padding="40")
 frame.pack()
+frame.pack_forget()
 
 frame2 = ttk.Frame(app, padding="20")
 frame2.pack()
@@ -200,9 +236,16 @@ frame3 = ttk.Frame(app, padding="50")
 frame3.pack(side="bottom", pady=20)
 frame3.pack_forget()
 
+frame4 = ttk.Frame(app, padding="50")
+frame4.pack()
+frame4.pack_forget()
+
 ## labels
 error_label = tk.Label(frame3, text="", fg="red", pady=50)
 error_label.pack()
+
+re_enter_label = tk.Label(frame2, text="", fg="red", pady=10)
+re_enter_label.pack()
 
 choose_label = ttk.Label(frame, text="Choose your weapon", padding="20")
 choose_label.pack()
@@ -235,19 +278,16 @@ PhaseShift_label.pack()
 PhaseShift_entry = ttk.Entry(frame2, width=20)
 PhaseShift_entry.pack()
 
-re_enter_label = tk.Label(frame2, text="", fg="red", pady=10)
-re_enter_label.pack()
-
 ### buttons
 # Button to read and store the points
-read_button = tk.Button(frame3, text="Choose File", command=read_and_store_points)
+read_button = tk.Button(frame3, text="Choose File", command=lambda: read_and_store_points())
 read_button.pack(pady=10)
 
 # Buttons for displaying data in separate windows
 discrete_button = tk.Button(frame3, text="Display Discrete Graph", command=display_discrete)
 discrete_button.pack(pady=10)
 
-continuous_button = tk.Button(frame3, text="Display Continuous Graph", command=display_continuous)
+continuous_button = tk.Button(frame3, text="Display Continuous Graph", command=lambda: display_continuous(0))
 continuous_button.pack(pady=10)
 
 draw_button = tk.Button(frame, text="Draw your signal", command=lambda: switch_to_frame(frame2, frame))
@@ -259,10 +299,28 @@ points_button.pack(pady=10)
 plot_button = tk.Button(frame2, text="Plot it", command=plot_wave, padx=20)
 plot_button.pack(pady=10)
 
+task1_button = ttk.Button(frame0, text="Task1", command=lambda: switch_to_frame(frame, frame0))
+task1_button.pack()
+
+task2_button = ttk.Button(frame0, text="Task2", command=lambda: switch_to_frame(frame4, frame0))
+task2_button.pack()
+
 frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
 frame2_back_button.pack(pady=10)
 
 frame3_back_button = tk.Button(frame3, text="back", command=lambda: switch_to_frame(frame, frame3))
 frame3_back_button.pack(pady=10)
+
+frame4_file1_button = tk.Button(frame4, text="choose first file", command=lambda: read_and_store_points1())
+frame4_file1_button.pack(pady=10)
+
+frame4_file2_button = tk.Button(frame4, text="choose second file", command=lambda: read_and_store_points2())
+frame4_file2_button.pack(pady=10)
+
+add_signals_button = tk.Button(frame4, text="add signals", command=lambda: display_continuous("+"))
+add_signals_button.pack(pady=10)
+
+subtract_signals_button = tk.Button(frame4, text="subtract signals", command=lambda: display_continuous("-"))
+subtract_signals_button.pack(pady=10)
 
 app.mainloop()
