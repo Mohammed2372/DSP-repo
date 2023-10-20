@@ -24,3 +24,17 @@ class Add_Signals:
         for i in range(len(points1)):
             points1[i][1] -= points2[i][1]
         return points1
+
+    def multiplication(self, points1, constant):  # multiplcating the y's in points with constant
+        if not (self.validate_points(points1)):
+            return
+        for i in range(len(points1)):
+            points1[i][1] *= constant
+        return points1
+
+    def squaring(self, points1):  # squaring every y int points
+        if not (self.validate_points(points1)):
+            return  # Validation failed
+        for i in range(len(points1)):
+            points1[i][1] *= points1[i][1]
+        return points1
