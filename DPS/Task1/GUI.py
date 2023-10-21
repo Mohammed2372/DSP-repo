@@ -199,14 +199,34 @@ def display_continuous(choice):
     cl = add_signals.Add_Signals()
     pointss = []  # Initialize an empty list
     if choice == "+":
+        pointss.clear()  # set pointss to null before using it
         if points1 and points2:  # Check if both signals are loaded
             pointss = cl.adding(points1, points2)
             print("Added Points:", pointss)
     elif choice == "-":
+        pointss.clear()
         if points1 and points2:
-            pointss = cl.subtracting(points1, points2)
+            points11 = points1
+            points22 = points2
+            pointss = cl.subtracting(points11, points22)
             print("Subtracted Points:", pointss)
+    elif choice == "*":
+        points11 = points1
+        cl.multiplication_constant = float(multiconst_entry.get())  # getting the consatnt value from user
+        if points11:
+            pointss.clear()
+            pointss = cl.multiplication(
+                points11)  # make entry to take multiplicatoin constant from user and define it in class
+
+            print("multiplicatoin points:", pointss)
+    elif choice == "2":
+        points11 = points1
+        pointss.clear()
+        if points1:
+            pointss = cl.squaring(points11)
+            print("squaring Points:", pointss)
     elif choice == 0:
+        pointss.clear()
         if points:  # Check if a single signal is loaded
             pointss = points
 
@@ -322,5 +342,18 @@ add_signals_button.pack(pady=10)
 
 subtract_signals_button = tk.Button(frame4, text="subtract signals", command=lambda: display_continuous("-"))
 subtract_signals_button.pack(pady=10)
+
+### label entry for multi value
+multiconst_label = ttk.Label(frame4, text="Enter constant value:", padding="20")
+multiconst_label.pack()
+multiconst_entry = ttk.Entry(frame4, width=20)
+multiconst_entry.pack()
+
+multi_signals_button = tk.Button(frame4, text="multiplicate signal with constant",
+                                 command=lambda: display_continuous("*"))
+multi_signals_button.pack(pady=10)
+
+squaring_signals_button = tk.Button(frame4, text="squaring first signal", command=lambda: display_continuous("2"))
+squaring_signals_button.pack(pady=10)
 
 app.mainloop()

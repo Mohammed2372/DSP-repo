@@ -1,4 +1,6 @@
 class Add_Signals:
+    multiplication_constant = None
+
     def __init__(self):
         pass
 
@@ -25,11 +27,11 @@ class Add_Signals:
             points1[i][1] -= points2[i][1]
         return points1
 
-    def multiplication(self, points1, constant):  # multiplcating the y's in points with constant
+    def multiplication(self, points1):  # multiplcating the y's in points with constant
         if not (self.validate_points(points1)):
             return
         for i in range(len(points1)):
-            points1[i][1] *= constant
+            points1[i][1] *= self.multiplication_constant
         return points1
 
     def squaring(self, points1):  # squaring every y int points
