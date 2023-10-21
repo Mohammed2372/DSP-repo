@@ -8,7 +8,7 @@ from tkinter import filedialog
 X_label = None
 file_path = None
 points = []
-timelist = np.arange(0, 10, .1)
+timelist = np.arange(0, 10, .01)
 digital = True
 
 
@@ -27,7 +27,7 @@ def draw_wave():
     PhaseShift = float(PhaseShift_entry.get())
 
     global timelist , digital
-    timelist = np.arange(0, 10, 0.01)
+
 
     if SamplingFrequency != 0:
 
