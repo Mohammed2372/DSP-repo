@@ -3,7 +3,6 @@ class Add_Signals:
     shift_constant = None
     norm_mode = None
 
-
     def __init__(self):
         pass
 
@@ -44,7 +43,6 @@ class Add_Signals:
             points1[i][1] *= points1[i][1]
         return points1
 
-
     def shift(self, points1):  # shift the y's in points with constant
         if not (self.validate_points(points1)):
             return
@@ -56,7 +54,6 @@ class Add_Signals:
 
         y = [pair[1] for pair in points1]
         x = [pair[0] for pair in points1]
-
 
         if self.norm_mode == "-1 to 1":
             min_value = min(y)
@@ -72,7 +69,6 @@ class Add_Signals:
         merged_array = [(x, y) for x, y in zip(x, y)]
         return merged_array
 
-
     def acc(self, points1):  # shift the y's in points with constant
 
         y = [pair[1] for pair in points1]
@@ -80,7 +76,6 @@ class Add_Signals:
 
         for i in range(1, len(y)):
             y[i] += y[i - 1]
-
 
         merged_array = [(x, y) for x, y in zip(x, y)]
         print(merged_array)

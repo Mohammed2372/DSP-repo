@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from tkinter import filedialog
 
 from DPS.Task2 import add_signals
+from DPS.Task3 import task3
 
 # from DPS.Task2.add_signals import Add_Signals
 
@@ -194,7 +195,6 @@ def display_discrete():
 
 
 # Displaying the data continues
-# Displaying the data continues
 def display_continuous(choice):
     cl = add_signals.Add_Signals()
     pointss = []  # Initialize an empty list
@@ -222,7 +222,7 @@ def display_continuous(choice):
 
     elif choice == "shift":
         points11 = points1
-        cl.shift_constant = float(shift_entry.get()) # getting the consatnt value from user
+        cl.shift_constant = float(shift_entry.get())  # getting the consatnt value from user
         if points11:
             pointss.clear()
             pointss = cl.shift(points11)  # make entry to take multiplicatoin constant from user and define it in class
@@ -231,7 +231,7 @@ def display_continuous(choice):
 
     elif choice == "norm":
         points11 = points1
-        cl.norm_mode = norm_var.get() # getting the consatnt value from user
+        cl.norm_mode = norm_var.get()  # getting the consatnt value from user
         if points11:
             pointss.clear()
             pointss = cl.norm(points11)  # make entry to take multiplicatoin constant from user and define it in class
@@ -243,7 +243,6 @@ def display_continuous(choice):
         if points11:
             pointss.clear()
             pointss = cl.acc(points11)  # make entry to take multiplicatoin constant from user and define it in class
-
 
     elif choice == "2":
         points11 = points1
@@ -262,6 +261,24 @@ def display_continuous(choice):
         display_error_message("No data to plot.", 1)
 
 
+def option_selected(*args):
+    label.config(text=f"Selected: {value}")
+    user_choice.set(selected_option.get())
+
+
+# Function to update the label when an option is selected
+def entry_option_selected(*args):
+    global label
+    value = user_choice.get()
+    label.config(text=f"Selected (Entry): {value}")
+
+
+def calculate_bits():
+    selected_value = selected_option.get()
+    task3.quantization.calculate_bits(points1, selected_value)
+
+
+#############################################################################
 # creating the app
 app = tk.Tk()
 app.title("DPS")
@@ -285,6 +302,10 @@ frame3.pack_forget()
 frame4 = ttk.Frame(app, padding="50")
 frame4.pack()
 frame4.pack_forget()
+
+frame5 = ttk.Frame(app, padding="50")  # task3
+frame5.pack()
+frame5.pack_forget()
 
 ## labels
 error_label = tk.Label(frame3, text="", fg="red", pady=50)
@@ -351,6 +372,9 @@ task1_button.pack()
 task2_button = ttk.Button(frame0, text="Task2", command=lambda: switch_to_frame(frame4, frame0))
 task2_button.pack()
 
+task3_button = ttk.Button(frame0, text="Task3", command=lambda: switch_to_frame(frame5, frame0))
+task3_button.pack()
+
 frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
 frame2_back_button.pack(pady=10)
 
@@ -363,6 +387,33 @@ frame4_file1_button.pack(pady=10)
 frame4_file2_button = tk.Button(frame4, text="choose second file", command=lambda: read_and_store_points2())
 frame4_file2_button.pack(pady=10)
 
+# task3
+value_label = ttk.Label(frame5, text="bits/levels")
+value_label.pack(pady=10)
+
+options = ["bits", "levels"]
+selected_option = tk.StringVar(app)
+selected_option.set(options[0])
+
+radioOption = tk.StringVar()
+# Create the OptionMenu
+option_menu = tk.OptionMenu(frame5, selected_option, *options, command=entry_option_selected)
+option_menu.pack(pady=5)
+
+entry_var = tk.IntVar(frame5)
+entry = ttk.Entry(frame5, textvariable=entry_var)
+entry.pack(pady=10)
+
+frame5_file_button = tk.Button(frame5, text="choose signal file", command=lambda: read_and_store_points1())
+frame5_file_button.pack(pady=10)
+
+user_choice = tk.StringVar()
+user_choice.trace_add("write", entry_option_selected)
+
+calculateButton = tk.Button(frame5, text="Calculate", command=calculate_bits)
+calculateButton.pack(pady=10)
+#################################################################################
+
 add_signals_button = tk.Button(frame4, text="add signals", command=lambda: display_continuous("+"))
 add_signals_button.pack(pady=10)
 
@@ -370,14 +421,14 @@ subtract_signals_button = tk.Button(frame4, text="subtract signals", command=lam
 subtract_signals_button.pack(pady=10)
 
 ### label entry for multi value
+
 multiconst_label = ttk.Label(frame4, text="Enter constant value:", padding="20")
 multiconst_label.pack()
 multiconst_entry = ttk.Entry(frame4, width=20)
 multiconst_entry.pack()
 
-
-
-multi_signals_button = tk.Button(frame4, text="multiplicate signal with constant",command=lambda: display_continuous("*"))
+multi_signals_button = tk.Button(frame4, text="multiplicate signal with constant",
+                                 command=lambda: display_continuous("*"))
 multi_signals_button.pack(pady=10)
 
 shift_label = ttk.Label(frame4, text="Enter constant value:", padding="20")
@@ -385,7 +436,7 @@ shift_label.pack()
 shift_entry = ttk.Entry(frame4, width=20)
 shift_entry.pack()
 
-shift_signals_button = tk.Button(frame4, text="shift signal",command=lambda: display_continuous("shift"))
+shift_signals_button = tk.Button(frame4, text="shift signal", command=lambda: display_continuous("shift"))
 shift_signals_button.pack(pady=10)
 
 type = ["-1 to 1", "0 to 1"]
@@ -394,13 +445,13 @@ norm_var.set("Select an option")
 menu = tk.OptionMenu(frame4, norm_var, *type)
 menu.pack(pady=10)
 
-norm_signals_button = tk.Button(frame4, text="norm signal",command=lambda: display_continuous("norm"))
+norm_signals_button = tk.Button(frame4, text="norm signal", command=lambda: display_continuous("norm"))
 norm_signals_button.pack(pady=10)
 
 squaring_signals_button = tk.Button(frame4, text="squaring first signal", command=lambda: display_continuous("2"))
 squaring_signals_button.pack(pady=10)
 
-acc_signals_button = tk.Button(frame4, text="Accumulation signal",command=lambda: display_continuous("acc"))
+acc_signals_button = tk.Button(frame4, text="Accumulation signal", command=lambda: display_continuous("acc"))
 acc_signals_button.pack(pady=10)
 
 app.mainloop()
