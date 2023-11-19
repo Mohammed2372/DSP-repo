@@ -1,13 +1,68 @@
 import tkinter as tk
 from tkinter import ttk
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from tkinter import filedialog
+from functools import partial
 
 from DPS.Task2 import add_signals
 from DPS.Task3 import task3
+from DPS.task5 import tst
+from DPS.task5.DCT_DC import Task5
 
-# from DPS.Task2.add_signals import Add_Signals
+
+def taskk5(value):
+    user_var = value
+    global Y, DCT, N
+    Y = [50.3844170297569,
+         49.5528258147577,
+         47.5503262094184,
+         44.4508497187474,
+         40.3553390593274,
+         50]
+
+    DCT = []
+    N = len(Y)
+    for x in range(N):
+        k = 0
+        for y in range(N):
+            k += Y[y] * math.cos((math.pi / (4 * N)) * (2 * y - 1) * (2 * x - 1))
+        k *= math.sqrt(2 / N)
+        DCT.append(round(k, 5))
+
+    with open("DCToutput.txt", "w") as myFile:
+        for i in range(int(user_var)):
+            myFile.write(str(i) + '  ' + str(DCT[i]) + '\n')
+
+    print(DCT)
+
+    before = [10.4628, 7.324, 7.8834, 11.3679, 12.962, 10.4628, 7.324,
+              7.8834, 11.3679, 12.962, 11.3679, 12.962, 10.4628, 7.324, 7.8834, 12.962]
+
+    sum = 0
+
+    for j in before:
+        sum += j
+
+    before_mean = sum / len(before)
+
+    for j in range(len(before)):
+        before[j] = round((before[j] - before_mean), 3)
+
+    after = before
+
+    with open("DC_output.txt", "w") as myFile:
+        for i in range(len(after)):
+            myFile.write(str(i) + '  ' + str(after[i]) + '\n')
+
+    print(after)
+
+    tst.SignalSamplesAreEqual("DCT_output.txt", DCT)
+    tst.SignalSamplesAreEqual("DC_component_output.txt", after)
+
+def calculate_dct(user_var):
+    task5(user_var)
 
 # Globals
 X_label = None
@@ -26,7 +81,7 @@ def switch_to_frame(frame_to_show, frame_to_hide):
 
 def draw_wave():
     re_enter_label.config(text="")
-    wave_type = wave_entry.get()
+    wave_type = value_entry.get()
     Amplitude = float(Amplitude_entry.get())
     AnalogFrequency = float(AnalogFrequency_entry.get())
     SamplingFrequency = int(SamplingFrequency_entry.get())
@@ -307,6 +362,10 @@ frame5 = ttk.Frame(app, padding="50")  # task3
 frame5.pack()
 frame5.pack_forget()
 
+frame6 = ttk.Frame(app, padding="50")  # task5
+frame6.pack()
+frame6.pack_forget()
+
 ## labels
 error_label = tk.Label(frame3, text="", fg="red", pady=50)
 error_label.pack()
@@ -322,8 +381,8 @@ entry_label.pack()
 
 wave_label = ttk.Label(frame2, text="Enter sin/cos:", padding="20")
 wave_label.pack()
-wave_entry = ttk.Entry(frame2, width=20)
-wave_entry.pack()
+value_entry = ttk.Entry(frame2, width=20)
+value_entry.pack()
 
 Amplitude_label = ttk.Label(frame2, text="Enter Amplitude:", padding="20")
 Amplitude_label.pack()
@@ -410,10 +469,27 @@ frame5_file_button.pack(pady=10)
 user_choice = tk.StringVar()
 user_choice.trace_add("write", entry_option_selected)
 
-calculateButton = tk.Button(frame5, text="Calculate", command=calculate_bits)
-calculateButton.pack(pady=10)
-#################################################################################
+calculattask5 = tk.Button(frame5, text="Calculate", command=calculate_bits)
+calculattask5.pack(pady=10)
 
+
+#################################################################################
+## task5
+
+
+task5_button = ttk.Button(frame0, text="Task5", command=lambda: switch_to_frame(frame6, frame0))
+task5_button.pack()
+
+value_label55 = ttk.Label(frame6, text="enter number of dct:", padding="20")
+value_label55.pack()
+value_entry55 = ttk.Entry(frame6, width=20)
+value_entry55.pack()
+global value55
+value55 = value_entry55.get()
+calculattask5 = ttk.Button(frame6, text="Calculate", command=lambda: taskk5(value55))
+calculattask5.pack(pady=10)
+# print(DCT_DC.Task5.DCT)
+##################################################################################
 add_signals_button = tk.Button(frame4, text="add signals", command=lambda: display_continuous("+"))
 add_signals_button.pack(pady=10)
 
