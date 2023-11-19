@@ -61,8 +61,10 @@ def taskk5(value):
     tst.SignalSamplesAreEqual("DCT_output.txt", DCT)
     tst.SignalSamplesAreEqual("DC_component_output.txt", after)
 
+
 def calculate_dct(user_var):
     task5(user_var)
+
 
 # Globals
 X_label = None
@@ -446,7 +448,96 @@ frame4_file1_button.pack(pady=10)
 frame4_file2_button = tk.Button(frame4, text="choose second file", command=lambda: read_and_store_points2())
 frame4_file2_button.pack(pady=10)
 
+
+##################################################################################
 # task3
+
+def task3_frame_window():
+    global x, y, ranges, index, quan, incoded, error
+    x = []
+    y = []
+    ranges = []
+    index = []
+    quan = []
+    incoded = []
+    error = []
+    new_window = tk.Toplevel(app)
+    new_window.geometry("200x300")
+    task3Frame = tk.Frame(new_window)
+    label_val = tk.Label(task3Frame, text="bits/levels")
+    label_val.pack(pady=10)
+    radioOption = tk.StringVar()
+    option_menu = tk.Entry(task3Frame, textvariable=radioOption)
+    option_menu.pack(pady=10)
+    entry_var = tk.IntVar(task3Frame)
+    entry = tk.Entry(task3Frame, textvariable=entry_var)
+    entry.pack(pady=10)
+    uploadButton = tk.Button(
+        task3Frame, text="upload signal", command=lambda: read_and_store_points(x, y))
+    uploadButton.pack(pady=10)
+
+    def calculate_bits():
+        if radioOption.get() == "bits":
+            max_value = max(y)
+            min_value = min(y)
+            n = entry_var.get()
+            levels = pow(2, n)
+            lamda = (max_value - min_value) / levels
+            for i in range(levels):
+                midPoint = (min_value + (min_value + lamda)) / 2
+                Range = [round(min_value, 3), round((min_value + lamda), 3),
+                         round(midPoint, 3), i + 1]
+                ranges.append(Range)
+                min_value += lamda
+            for i in y:
+                for j in ranges:
+                    if i >= j[0]:
+                        if i <= j[1]:
+                            quan.append(j[2])
+                            index.append(j[3])
+                            break
+            for i in range(len(y)):
+                error.append(round(quan[i] - y[i], 3))
+            for i in index:
+                binary_representation = format(i - 1, f'0{n}b')
+                incoded.append(binary_representation)
+            print(incoded)
+            print(quan)
+        else:
+            max_value = max(y)
+            min_value = min(y)
+            levels = entry_var.get()
+            lamda = (max_value - min_value) / levels
+            for i in range(levels):
+                midPoint = (min_value + (min_value + lamda)) / 2
+                Range = [round(min_value, 3), round((min_value + lamda), 3),
+                         round(midPoint, 3), i + 1]
+                ranges.append(Range)
+                min_value += lamda
+            for i in y:
+                for j in ranges:
+                    if i >= j[0]:
+                        if i <= j[1]:
+                            quan.append(j[2])
+                            index.append(j[3])
+            for i in range(len(y)):
+                error.append(round(quan[i] - y[i], 3))
+            for i in index:
+                num_digits = math.ceil(math.log(levels, 2))
+                binary_representation = format(
+                    i - 1, f'0{num_digits}b')
+                incoded.append(binary_representation)
+            print(index)
+            print(incoded)
+            print(quan)
+            print(error)
+
+    calculateButton = tk.Button(
+        task3Frame, text="Calculate", command=calculate_bits)
+    calculateButton.pack(pady=10)
+    task3Frame.pack()
+
+
 value_label = ttk.Label(frame5, text="bits/levels")
 value_label.pack(pady=10)
 
@@ -469,9 +560,8 @@ frame5_file_button.pack(pady=10)
 user_choice = tk.StringVar()
 user_choice.trace_add("write", entry_option_selected)
 
-calculattask5 = tk.Button(frame5, text="Calculate", command=calculate_bits)
-calculattask5.pack(pady=10)
-
+calculattask3 = tk.Button(frame5, text="Calculate", command=task3_frame_window)
+calculattask3.pack(pady=10)
 
 #################################################################################
 ## task5

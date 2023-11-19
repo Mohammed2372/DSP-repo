@@ -3,6 +3,7 @@ from tkinter import ttk
 import math
 from DPS.task5 import tst
 
+
 class Task5:
     def __init__(self):
         pass
