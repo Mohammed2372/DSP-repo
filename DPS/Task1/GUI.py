@@ -10,6 +10,7 @@ from DPS.Task2 import add_signals
 from DPS.Task3 import task3
 from DPS.task5 import tst
 from DPS.task5.DCT_DC import Task5
+import task7
 
 
 def taskk5(value):
@@ -243,6 +244,9 @@ def read_and_store_points2():
     signal2, isperiodic2, points2 = read_points_and_metadata_from_file(file_path)
 
 
+
+
+
 # Displaying the data discrete
 def display_discrete():
     if points:
@@ -368,6 +372,10 @@ frame6 = ttk.Frame(app, padding="50")  # task5
 frame6.pack()
 frame6.pack_forget()
 
+frame7 = ttk.Frame(app, padding="50")  # task7
+frame7.pack()
+frame7.pack_forget()
+
 ## labels
 error_label = tk.Label(frame3, text="", fg="red", pady=50)
 error_label.pack()
@@ -435,6 +443,12 @@ task2_button.pack()
 
 task3_button = ttk.Button(frame0, text="Task3", command=lambda: switch_to_frame(frame5, frame0))
 task3_button.pack()
+
+task5_button = ttk.Button(frame0, text="Task5", command=lambda: switch_to_frame(frame6, frame0))
+task5_button.pack()
+
+task7_button = ttk.Button(frame0, text="Task7", command=lambda: switch_to_frame(frame7, frame0))
+task7_button.pack()
 
 frame2_back_button = tk.Button(frame2, text="back", command=lambda: switch_to_frame(frame, frame2))
 frame2_back_button.pack(pady=10)
@@ -563,12 +577,28 @@ user_choice.trace_add("write", entry_option_selected)
 calculattask3 = tk.Button(frame5, text="Calculate", command=task3_frame_window)
 calculattask3.pack(pady=10)
 
+
+#################################################################################
+##task 7
+
+frame7_file1_button = tk.Button(frame7, text="choose first file", command=lambda: read_and_store_points1())
+frame7_file1_button.pack(pady=10)
+
+frame7_file2_button = tk.Button(frame7, text="choose second file", command=lambda: read_and_store_points2())
+frame7_file2_button.pack(pady=10)
+
+# func1_label = ttk.Label(frame7, text="Enter constant value:", padding="20")
+# func1_label.pack()
+
+add_signals_button = tk.Button(frame7, text="calc_correlation", command=lambda: task7.calc_correlation(points1,points2,True))
+add_signals_button.pack(pady=10)
+
+
 #################################################################################
 ## task5
 
 
-task5_button = ttk.Button(frame0, text="Task5", command=lambda: switch_to_frame(frame6, frame0))
-task5_button.pack()
+
 
 value_label55 = ttk.Label(frame6, text="enter number of dct:", padding="20")
 value_label55.pack()
