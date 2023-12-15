@@ -1,4 +1,3 @@
-
 import cmath
 import tkinter as tk
 import math
@@ -7,7 +6,6 @@ from tkinter import filedialog
 amb = []
 theta = []
 tolerance = 1e-6  # Updated tolerance value
-
 
 
 def read_data(signal):
@@ -24,71 +22,63 @@ def read_data(signal):
                 parts = line.strip().split(' ')
                 signal.append(float(parts[0]))
 
-def DFT(dftList, out):
-    for i in range(len(dftList)):
-        k = i
-        sum = 0
-        for y in range(len(dftList)):
-            sum += dftList[y] * \
-                cmath.exp((-1j * 2*math.radians(180)*k*y)/len(dftList))
-            if abs(sum.imag) < tolerance:
-                sum = complex(sum.real, 0)
-            R = sum.real
-            I = sum.imag
-            R = round(sum.real, 2)
-            I = round(sum.imag, 2)
-            sum = complex(R, I)
-        out.append(sum)
-    for i in out:
-        polar = cmath.polar(i)
-        amb.append(polar[0])
-        theta.append((polar[1]))
-    with open("DFTotput.txt", "w") as myFile:
-        for i in range(len(amb)):
-            myFile.write(str(amb[i])+' , '+str(theta[i])+'\n')
-
-
-
-
 
 def perform_operation(signal1, signal2, operation):
-    len1 = len(signal1)
-    len2 = len(signal2)
-
-    if len1 < len2:
-        signal1 += [0] * (len2 - len1)
-    elif len1 > len2:
-        signal2 += [0] * (len1 - len2)
+    global out_file
+    out1 = []
+    out2 = []
+    DFT(signal1, out1, correlation=(operation == 'correlation'))
+    DFT(signal2, out2, correlation=(operation == 'correlation'))
+    x3 = []
 
     if operation == 'correlation':
         out_file = "fastCorrelation.txt"
     elif operation == 'convolution':
         out_file = "fastConvolution.txt"
 
-    out1 = []
-    out2 = []
-    DFT(signal1, out1)
-    DFT(signal2, out2)
-    x1 = out1
-    x2 = out2
-    x3 = []
-    for i in range(len(x1)):
-        x3.append(x1[i] * x2[i])
+    for i in range(len(out1)):
+        x3.append(out1[i] * out2[i])
 
-    # Perform IDFT
-    result = []
-    for i in range(len(x3)):
+    IDFT(x3, out_file)
+
+
+def DFT(dftList, out, correlation=False):
+    for i in range(len(dftList)):
         k = i
         sum_value = 0
-        for y in range(len(x3)):
-            sum_value += x3[y] * cmath.exp((1j * 2 * math.pi * k * y) / len(x3))
+        for y in range(len(dftList)):
+            sum_value += dftList[y] * cmath.exp((-1j if correlation else 1j) * 2 * math.pi * k * y / len(dftList))
             if abs(sum_value.imag) < tolerance:
                 sum_value = complex(sum_value.real, 0)
-        result.append(round(sum_value.real, 2) / len(x3))
+        if correlation:
+            sum_value = complex(sum_value.real, sum_value.imag * -1)
+        out.append(sum_value)
+        print(f'DFT[{i}] = {sum_value}')
 
-    with open(out_file, "w") as myFile:
+    for i in out:
+        polar = cmath.polar(i)
+        amb.append(polar[0])
+        theta.append((polar[1]))
+    with open("DFToutput.txt", "w") as myFile:
+        for i in range(len(amb)):
+            myFile.write(str(amb[i]) + ' , ' + str(theta[i]) + '\n')
+
+
+def IDFT(x1, outfile):
+    # Perform IDFT
+    result = []
+    length = len(x1)
+    for i in range(length):
+        k = i
+        sum_value = 0
+        for y in range(length):
+            sum_value += x1[y] * cmath.exp((1j * 2 * math.pi * k * y) / length)
+        result.append(round(sum_value.real, 2) / length)
+        print(f'IDFT[{i}] = {sum_value}')
+
+    with open(outfile, "w") as myFile:
         for i in range(len(result)):
-            myFile.write(str(i) + ' ' + str(result[len(result) - i - 1]) + "\n")
+            myFile.write(str(i) + ' ' + str(result[i]) + "\n")
 
 
 def create_gui():
