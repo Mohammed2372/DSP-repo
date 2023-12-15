@@ -10,7 +10,7 @@ from DPS.Task2 import add_signals
 from DPS.Task3 import task3
 from DPS.task5 import tst
 from DPS.task5.DCT_DC import Task5
-import task7
+
 
 
 def taskk5(value):
