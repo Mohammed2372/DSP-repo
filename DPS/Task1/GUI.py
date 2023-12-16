@@ -178,7 +178,7 @@ def read_points_and_metadata_from_file(file_path):
             print(f"An error occurred: {str(e)}")
             display_error_message("An error occurred. Choose a file and try again.", 3)
 
-    return SignalType, IsPeriodic, points
+    return points
 
 
 # Function to represent points as a discrete graph in a new window
