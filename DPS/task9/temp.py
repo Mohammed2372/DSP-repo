@@ -1,3 +1,11 @@
+import tkinter as tk
+from tkinter import ttk
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+from tkinter import filedialog
+
+
 def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width, stop_band_att, fs, filter_type):
 
     normlized_fs = transition_width / fs
@@ -12,7 +20,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
             new_fc = (passband_edge_freq_1 + ( transition_width / 2)) / fs
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -30,7 +38,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 + ( transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -48,15 +56,13 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
             new_fc = (passband_edge_freq_1 + ( transition_width / 2)) / fs
 
-            for i in range( n_for_loop ):
+            for i in range( n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
                     hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
 
-                print(i)
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n )
-                print(hd)
 
                 hdTw = hd * w
                 half_list.append(hdTw)
@@ -70,7 +76,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 + ( transition_width / 2)) / fs
 
-            for i in range( n_for_loop ):
+            for i in range( n_for_loop + 1 ):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -80,11 +86,14 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop :
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         signal = full_list
 
@@ -99,7 +108,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 - ( transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 *new_fc)
                 else:
@@ -117,7 +126,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 - ( transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 *new_fc)
                 else:
@@ -135,7 +144,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 - ( transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 *new_fc)
                 else:
@@ -154,7 +163,9 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
 
             new_fc = (passband_edge_freq_1 - ( transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
+
+                # print(i)
                 if i == 0:
                     hd = 1 - (2 *new_fc)
                 else:
@@ -163,17 +174,18 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
                 w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1) ) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
                 half_list.append(hdTw)
+                # if i == 0:
+                #     print(half_list)
+                #
+                #     break
 
-        print(n)
-        print(n_for_loop)
-        for j in range(n):
-            print(j)
-
-
-            if j >= n_for_loop :
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         signal = full_list
 
@@ -257,11 +269,13 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop :
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         signal = full_list
 
@@ -344,12 +358,20 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop :
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         signal = full_list
+
+
+    print(len( half_list))
+    print(half_list)
     print(signal)
 
+sig = []
+filter(sig, 1500, 0,500, 50, 8000, "low_pass")
