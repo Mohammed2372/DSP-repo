@@ -36,6 +36,13 @@ class FilterApp:
         apply_button = ttk.Button(root, text="Apply Filter", command=self.apply_filter)
         apply_button.pack()
 
+        # Button to choose file for comparison
+        choose_compare_file_button = ttk.Button(root, text="Choose File to Compare", command=self.choose_compare_file)
+        choose_compare_file_button.pack()
+
+        # Variable to store the file path for comparison
+        self.compare_file_path = None
+
     def create_entry(self, root, label_text):
         label = ttk.Label(root, text=label_text)
         entry = ttk.Entry(root)
@@ -68,7 +75,15 @@ class FilterApp:
                                                stop_band_att, fs, filter_type)
 
         # Save the filtered signal to a file
-        self.save_signal_to_file(filtered_signal, "filtered_signal.txt")
+        filtered_file_path = "filtered_signal.txt"
+        self.save_filtered_signal_to_file(filtered_signal, filtered_file_path)
+
+        # Compare the filtered file with the chosen file for comparison
+        if self.compare_file_path:
+            self.compare_files(filtered_file_path, self.compare_file_path)
+        else:
+            print("Please choose a file for comparison.")
+
         # Plot the filtered signal
         self.plot_signal(signal, filtered_signal)
 
@@ -443,6 +458,7 @@ class FilterApp:
 
     def read_points_and_metadata_from_file(self, file_path):
         points = []
+        global SignalType, IsPeriodic, X_label
         X_label = None
 
         if file_path:
@@ -469,10 +485,43 @@ class FilterApp:
 
         return points
 
-    def save_signal_to_file(self, signal, file_path):
-        with open(file_path, 'w') as file:
-            for point in signal:
-                file.write(f"{point[0]} {point[1]}\n")
+    def save_filtered_signal_to_file(self, signal, file_path):
+        if not signal:
+            print("No signal to save.")
+            return
+
+        try:
+            with open(file_path, 'w') as file:
+                # Save signal type, periodicity, and size
+                file.write(f"{SignalType}\n")
+                file.write(f"{IsPeriodic}\n")
+                file.write(f"{len(signal)}\n")
+
+                # Save the signal data
+                for point in signal:
+                    file.write(f"{point[0]} {point[1]}\n")
+
+            print(f"Filtered signal saved to {file_path}")
+        except Exception as e:
+            print(f"An error occurred while saving the filtered signal: {str(e)}")
+
+    def choose_compare_file(self):
+        # Open a file dialog to choose a file for comparison
+        self.compare_file_path = filedialog.askopenfilename()
+        print("File chosen for comparison:", self.compare_file_path)
+
+    def compare_files(self, file1_path, file2_path):
+        try:
+            with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+                content1 = file1.read()
+                content2 = file2.read()
+
+            if content1 == content2:
+                print("Files are identical.")
+            else:
+                print("Files are different.")
+        except Exception as e:
+            print(f"An error occurred during file comparison: {str(e)}")
 
 
 if __name__ == "__main__":
