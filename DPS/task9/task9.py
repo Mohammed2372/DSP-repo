@@ -60,31 +60,37 @@ class FilterApp:
         fs = float(self.fs_entry.get())
 
         # Assume you have a signal array, replace this with your actual signal
-        signal = []
         signal = points
 
         filter_type = self.filter_type_var.get()
 
-        self.choosing_filter(signal, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
-                             filter_type)
+        filtered_signal = self.choosing_filter(signal, passband_edge_freq_1, passband_edge_freq_2, transition_width,
+                                               stop_band_att, fs, filter_type)
 
-    def choosing_filter(self, signal, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs, filter_type):
+        # Save the filtered signal to a file
+        self.save_signal_to_file(filtered_signal, "filtered_signal.txt")
+        # Plot the filtered signal
+        self.plot_signal(signal, filtered_signal)
+
+    def choosing_filter(self, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
+                        filter_type):
         normlized_fs = transition_width / fs
         half_list = []
         full_list = []
 
         if filter_type == "low_pass":
-            filter_low_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list)
+            signal = filter_low_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list)
         if filter_type == "high_pass":
-            filter_high_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list)
+            signal = filter_high_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list)
         if filter_type == "band_pass":
-            filter_band_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
-                             full_list)
+            signal = filter_band_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2,
+                                      half_list, full_list)
         if filter_type == "stop_pass":
-            filter_stop_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
-                             full_list)
+            signal = filter_stop_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2,
+                                      half_list, full_list)
+        return signal
 
-    def filter_low_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list):
+    def filter_low_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
@@ -120,7 +126,6 @@ class FilterApp:
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0:
@@ -140,7 +145,6 @@ class FilterApp:
 
                 hdTw = hd * w
                 half_list.append(hdTw)
-
 
         elif stop_band_att <= 74:
             n = math.ceil(5.5 / normlized_fs)
@@ -166,7 +170,7 @@ class FilterApp:
             else:
                 full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
-        signal = full_list
+        return full_list
 
     def filter_high_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list):
         if stop_band_att <= 21:
@@ -249,7 +253,10 @@ class FilterApp:
             else:
                 full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
-    def filter_band_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list, full_list):
+        return full_list
+
+    def filter_band_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
+                         full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
@@ -263,7 +270,7 @@ class FilterApp:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
                     hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 1
                 hdTw = hd * w
@@ -282,7 +289,7 @@ class FilterApp:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
                     hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
@@ -301,7 +308,7 @@ class FilterApp:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
                     hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
@@ -320,7 +327,7 @@ class FilterApp:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
                     hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
@@ -331,6 +338,8 @@ class FilterApp:
                 full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
             else:
                 full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+
+        return full_list
 
     def filter_stop_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
                          full_list):
@@ -347,7 +356,7 @@ class FilterApp:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
                     hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 1
                 hdTw = hd * w
@@ -366,12 +375,11 @@ class FilterApp:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
                     hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
                 half_list.append(hdTw)
-
 
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
@@ -386,7 +394,7 @@ class FilterApp:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
                     hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
@@ -405,7 +413,7 @@ class FilterApp:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
                     hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
-                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
+                            2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
@@ -417,6 +425,21 @@ class FilterApp:
             else:
                 full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
+        return full_list
+
+    def plot_signal(self, original_signal, filtered_signal):
+        original_x = [point[0] for point in original_signal]
+        original_y = [point[1] for point in original_signal]
+
+        filtered_x = [point[0] for point in filtered_signal]
+        filtered_y = [point[1] for point in filtered_signal]
+
+        plt.plot(original_x, original_y, label="Original Signal")
+        plt.plot(filtered_x, filtered_y, label="Filtered Signal")
+        plt.xlabel("Time or Frequency")
+        plt.ylabel("Amplitude")
+        plt.legend()
+        plt.show()
 
     def read_points_and_metadata_from_file(self, file_path):
         points = []
@@ -445,6 +468,11 @@ class FilterApp:
                 print(f"An error occurred: {str(e)}")
 
         return points
+
+    def save_signal_to_file(self, signal, file_path):
+        with open(file_path, 'w') as file:
+            for point in signal:
+                file.write(f"{point[0]} {point[1]}\n")
 
 
 if __name__ == "__main__":
