@@ -68,8 +68,7 @@ class FilterApp:
         self.choosing_filter(signal, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
                              filter_type)
 
-    def choosing_filter(self, signal, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
-                        filter_type):
+    def choosing_filter(self, signal, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs, filter_type):
         normlized_fs = transition_width / fs
         half_list = []
         full_list = []
@@ -88,14 +87,16 @@ class FilterApp:
     def filter_low_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * new_fc
                 else:
-                    hd = (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
 
                 w = 1
                 hdTw = hd * w
@@ -103,281 +104,319 @@ class FilterApp:
 
         elif stop_band_att <= 44:
             n = math.ceil(3.1 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * new_fc
                 else:
-                    hd = (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
                 half_list.append(hdTw)
 
+
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
+            new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * new_fc
                 else:
-                    hd = (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
 
+                print(i)
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
+                print(hd)
+
                 hdTw = hd * w
                 half_list.append(hdTw)
 
+
         elif stop_band_att <= 74:
             n = math.ceil(5.5 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * new_fc
                 else:
-                    hd = (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
 
                 w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in n:
-
+        for j in range(n):
             if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j]))
-
+                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j]))
+                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+
+        signal = full_list
 
     def filter_high_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
-                    hd = -1 * (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = -1 * ((2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i)))
 
                 w = 1
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 44:
             n = math.ceil(3.1 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
-                    hd = -1 * (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = -1 * ((2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i)))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
-                    hd = -1 * (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = -1 * ((2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i)))
 
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 74:
             n = math.ceil(5.5 / normlized_fs)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-                new_fc = passband_edge_freq_1 + (normlized_fs / 2)
-                if n == 0:
+            new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
+
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
-                    hd = -1 * (2 * new_fc / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc * i)
+                    hd = -1 * ((2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i)))
 
                 w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
+                half_list.append(hdTw)
 
-        for j in n:
+        for j in range(n):
+            print(j)
 
             if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j]))
-
+                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j]))
+                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
-    def filter_band_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
-                         full_list):
+    def filter_band_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list, full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
-                    hd = (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) - (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 1
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 44:
             n = math.ceil(3.1 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            n_for_loop = (np.abs(n) - 1) / 2
-
-            for i in n_for_loop:
-                if n == 0:
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
-                    hd = (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) - (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
-                    hd = (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) - (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 74:
             n = math.ceil(5.5 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
+            for i in range(n_for_loop):
+                if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
-                    hd = (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) - (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) - (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
-                w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos(
-                    (4 * math.pi * i) / (n - 1))
+                w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
+                half_list.append(hdTw)
 
-        for j in n:
-
+        for j in range(n):
             if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j]))
-
+                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j]))
+                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
     def filter_stop_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
                          full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
-                    hd = 1 - (2 * (new_fc2 - new_fc1))
+            for i in range(n_for_loop):
+                if i == 0:
+                    hd = -2 * (new_fc2 - new_fc1)
                 else:
-                    hd = - (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) + (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 1
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 44:
             n = math.ceil(3.1 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            n_for_loop = (np.abs(n) - 1) / 2
-
-            for i in n_for_loop:
-                if n == 0:
-                    hd = 1 - (2 * (new_fc2 - new_fc1))
+            for i in range(n_for_loop):
+                if i == 0:
+                    hd = -2 * (new_fc2 - new_fc1)
                 else:
-                    hd = - (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) + (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
+
 
         elif stop_band_att <= 53:
             n = math.ceil(3.3 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
-                    hd = 1 - (2 * (new_fc2 - new_fc1))
+            for i in range(n_for_loop):
+                if i == 0:
+                    hd = -2 * (new_fc2 - new_fc1)
                 else:
-                    hd = - (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) + (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
+                half_list.append(hdTw)
 
         elif stop_band_att <= 74:
             n = math.ceil(5.5 / normlized_fs)
-            new_fc1 = passband_edge_freq_1 + (normlized_fs / 2)
-            new_fc2 = passband_edge_freq_2 + (normlized_fs / 2)
-            n_for_loop = (np.abs(n) - 1) / 2
+            if n % 2 == 0:
+                n += 1
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in n_for_loop:
-
-                if n == 0:
-                    hd = 1 - (2 * (new_fc2 - new_fc1))
+            for i in range(n_for_loop):
+                if i == 0:
+                    hd = -2 * (new_fc2 - new_fc1)
                 else:
-                    hd = - (2 * new_fc2 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc2 * i) + (
-                            2 * new_fc1 / 2 * math.pi * i) * math.sin(2 * math.pi * new_fc1 * i)
+                    hd = -1 * (2 * new_fc2) * (math.sin(2 * math.pi * new_fc2 * i) / (2 * math.pi * new_fc2 * i)) + (
+                                2 * new_fc1) * (math.sin(2 * math.pi * new_fc1 * i) / (2 * math.pi * new_fc1 * i))
 
-                w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos(
-                    (4 * math.pi * i) / (n - 1))
+                w = 0.42 + 0.5 * math.cos((2 * math.pi * i) / (n - 1)) + 0.08 * math.cos((4 * math.pi * i) / (n - 1))
                 hdTw = hd * w
+                half_list.append(hdTw)
 
-        for j in n:
-
+        for j in range(n):
             if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j]))
-
+                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j]))
+                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
 
-        # signal = full_list    why to make variable that save full_list while you have the original list if you want to return it
 
     def read_points_and_metadata_from_file(self, file_path):
         points = []
