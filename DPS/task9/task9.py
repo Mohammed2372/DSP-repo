@@ -113,7 +113,7 @@ class FilterApp:
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -131,7 +131,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -148,7 +148,7 @@ class FilterApp:
             n_for_loop = int((np.abs(n) - 1) / 2)
             new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -169,7 +169,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
@@ -179,11 +179,13 @@ class FilterApp:
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         return full_list
 
@@ -196,7 +198,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
@@ -214,7 +216,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
@@ -232,7 +234,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
@@ -250,7 +252,7 @@ class FilterApp:
 
             new_fc = (passband_edge_freq_1 - (transition_width / 2)) / fs
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 1 - (2 * new_fc)
                 else:
@@ -260,13 +262,13 @@ class FilterApp:
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            print(j)
-
-            if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         return full_list
 
@@ -280,7 +282,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 + (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
@@ -299,7 +301,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 + (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
@@ -318,7 +320,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 + (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
@@ -337,7 +339,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 + (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * (new_fc2 - new_fc1)
                 else:
@@ -348,11 +350,13 @@ class FilterApp:
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         return full_list
 
@@ -366,7 +370,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 - (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
@@ -385,7 +389,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 - (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
@@ -404,7 +408,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 - (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
@@ -423,7 +427,7 @@ class FilterApp:
             new_fc2 = passband_edge_freq_2 - (transition_width / 2)
             n_for_loop = int((np.abs(n) - 1) / 2)
 
-            for i in range(n_for_loop):
+            for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = -2 * (new_fc2 - new_fc1)
                 else:
@@ -434,11 +438,13 @@ class FilterApp:
                 hdTw = hd * w
                 half_list.append(hdTw)
 
-        for j in range(n):
-            if j >= n_for_loop:
-                full_list.append(((j - n_for_loop), half_list[j - n_for_loop - 1]))
+        for j in range(-n_for_loop, n_for_loop + 1):
+            if j < 0:
+                full_list.append((j, half_list[-n_for_loop + np.abs(j) - 1]))
+            elif j == 0:
+                full_list.append((j, half_list[0]))
             else:
-                full_list.append(((j - n_for_loop), half_list[n_for_loop - j - 1]))
+                full_list.append((j, half_list[j]))
 
         return full_list
 
