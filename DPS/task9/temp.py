@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import ttk
 import numpy as np
 import math
-import matplotlib.pyplot as plt
 from tkinter import filedialog
 
 
@@ -373,6 +372,38 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
     print(len( half_list))
     print(half_list)
     print(signal)
+
+def calcFilterd(signal, filter, res):
+    res = []
+    n = len(signal) + len(filter) - 1
+    result = [0] * n
+    signal_padded = [0] * (len(filter) - 1) + signal + [0] * (len(filter) - 1)
+    for i in range(n):
+        for j in range(len(filter)):
+            result[i] += signal_padded[i - j + len(filter) - 1] * filter[j]
+            print(result[i])
+            res.append(result[i])
+
+
+def up_resample(signal ,l_factor):
+    upscaled =[]
+    for i in range(len(signal)):
+        upscaled.append(signal[i])
+        for j in range(l_factor-1):
+            upscaled.append(signal[i] * (l_factor - 1 - j) / l_factor)
+
+
+def down_resample(signal ,m_factor):
+    upscaled = []
+    for i in range(signal):
+        if i % m_factor != 0:
+            continue
+        upscaled.append(signal[i])
+
+
+
+
+
 
 sig = []
 filter(sig, 1500, 0,500, 50, 8000, "low_pass")
