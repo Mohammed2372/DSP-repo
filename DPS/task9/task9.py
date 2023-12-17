@@ -94,18 +94,18 @@ class FilterApp:
         full_list = []
 
         if filter_type == "low_pass":
-            signal = filter_low_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list)
+            signal = self.filter_low_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, half_list, full_list)
         if filter_type == "high_pass":
-            signal = filter_high_pass(stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list)
+            signal = self.filter_high_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, half_list, full_list)
         if filter_type == "band_pass":
-            signal = filter_band_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2,
-                                      half_list, full_list)
+            signal = self.filter_band_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, passband_edge_freq_2,
+                                           half_list, full_list)
         if filter_type == "stop_pass":
-            signal = filter_stop_pass(stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2,
-                                      half_list, full_list)
+            signal = self.filter_stop_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, passband_edge_freq_2,
+                                           half_list, full_list)
         return signal
 
-    def filter_low_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list):
+    def filter_low_pass(self, stop_band_att, normlized_fs,transition_width,fs, passband_edge_freq_1, half_list, full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
@@ -189,7 +189,7 @@ class FilterApp:
 
         return full_list
 
-    def filter_high_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, half_list, full_list):
+    def filter_high_pass(self, stop_band_att, normlized_fs,transition_width,fs, passband_edge_freq_1, half_list, full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
@@ -272,14 +272,14 @@ class FilterApp:
 
         return full_list
 
-    def filter_band_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
+    def filter_band_pass(self, stop_band_att, normlized_fs,transition_width,fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
                          full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -297,8 +297,8 @@ class FilterApp:
             n = math.ceil(3.1 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -316,8 +316,8 @@ class FilterApp:
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -335,8 +335,8 @@ class FilterApp:
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -360,14 +360,14 @@ class FilterApp:
 
         return full_list
 
-    def filter_stop_pass(self, stop_band_att, normlized_fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
+    def filter_stop_pass(self, stop_band_att, normlized_fs, transition_width,fs, passband_edge_freq_1, passband_edge_freq_2, half_list,
                          full_list):
         if stop_band_att <= 21:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -385,8 +385,8 @@ class FilterApp:
             n = math.ceil(3.1 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -404,8 +404,8 @@ class FilterApp:
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -423,8 +423,8 @@ class FilterApp:
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -447,6 +447,69 @@ class FilterApp:
                 full_list.append((j, half_list[j]))
 
         return full_list
+
+####### apply the filter on signal ######
+    def conv(self, signal, filter):
+        res = []
+        n = len(signal) + len(filter) - 1
+        result = [0] * n
+        signal_padded = [0] * (len(filter) - 1) + signal + [0] * (len(filter) - 1)
+        for i in range(n):
+            for j in range(len(filter)):
+                result[i] += signal_padded[i - j + len(filter) - 1] * filter[j]
+                print(result[i])
+                res.append(result[i])
+
+        return res
+
+
+
+    def up_resample(self, signal, l_factor):
+        upscaled = []
+        for i in range(len(signal)):
+            upscaled.append(signal[i])
+            for j in range(l_factor - 1):
+                upscaled.append(signal[i] * (l_factor - 1 - j) / l_factor)
+        return upscaled
+
+    def down_resample(self, signal, m_factor):
+        downscaled = []
+        for i in range(len(signal)):
+            if i % m_factor != 0:
+                continue
+            downscaled.append(signal[i])
+        return downscaled
+
+    def resampling(self, signal, l_factor, m_factor, stop_band_att, normalized_fs, transition_width, fs,
+                   passband_edge_freq_1, half_list, full_list):
+        resampled_signal = []
+        filter_coeff = []
+        final_signal = []
+
+        if l_factor > 0 and m_factor == 0:
+            resampled_signal = self.up_resample(signal, l_factor)
+            filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
+                                                passband_edge_freq_1, half_list, full_list)
+            final_signal = self.conv(resampled_signal, filter_coeff)
+            return final_signal
+
+        if m_factor > 0 and l_factor == 0:
+            filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
+                                                passband_edge_freq_1, half_list, full_list)
+            resampled_signal = self.down_resample(signal, m_factor)
+            final_signal = self.conv(resampled_signal, filter_coeff)
+            return final_signal
+
+        if m_factor > 0 and l_factor > 0:
+            resampled_signal = self.up_resample(signal, l_factor)
+            filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
+                                                passband_edge_freq_1, half_list, full_list)
+            final_signal = self.down_resample(self.conv(resampled_signal, filter_coeff), m_factor)
+            return final_signal
+        else:
+            return "error"
+
+
 
     def plot_signal(self, original_signal, filtered_signal):
         original_x = [point[0] for point in original_signal]

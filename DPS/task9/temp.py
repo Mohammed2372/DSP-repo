@@ -197,8 +197,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(0.9/ normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -216,8 +216,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(3.1 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -235,8 +235,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -254,8 +254,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 - (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 + (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -285,8 +285,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(0.9/ normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -304,8 +304,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(3.1 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -324,8 +324,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2)/ fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -343,8 +343,8 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0 :
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2)
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2)
+            new_fc1 = passband_edge_freq_1 + (transition_width / 2) /fs
+            new_fc2 = passband_edge_freq_2 - (transition_width / 2) /fs
             n_for_loop =int( ( np.abs(n) -1 ) / 2 )
 
 
@@ -373,7 +373,7 @@ def filter(signal, passband_edge_freq_1 , passband_edge_freq_2, transition_width
     print(half_list)
     print(signal)
 
-def calcFilterd(signal, filter, res):
+def conv(signal, filter):
     res = []
     n = len(signal) + len(filter) - 1
     result = [0] * n
@@ -384,6 +384,8 @@ def calcFilterd(signal, filter, res):
             print(result[i])
             res.append(result[i])
 
+    return res
+
 
 def up_resample(signal ,l_factor):
     upscaled =[]
@@ -391,14 +393,46 @@ def up_resample(signal ,l_factor):
         upscaled.append(signal[i])
         for j in range(l_factor-1):
             upscaled.append(signal[i] * (l_factor - 1 - j) / l_factor)
+    return upscaled
+
 
 
 def down_resample(signal ,m_factor):
-    upscaled = []
+    downscaled = []
     for i in range(signal):
         if i % m_factor != 0:
             continue
-        upscaled.append(signal[i])
+        downscaled.append(signal[i])
+    return downscaled
+
+def resampleing(signal, l_factor, m_factor):
+    resampeld_signal = []
+    filter = []
+    final_signal =[]
+    if l_factor > 0 and m_factor == 0:
+        resampeld_signal = up_resample(signal, l_factor)
+        filter = self.filter_low_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, half_list, full_list)
+        final_signal = conv(resampeld_signal, filter)
+        return final_signal
+
+    if m_factor > 0 and l_factor == 0:
+        filter = self.filter_low_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, half_list, full_list)
+        resampeld_signal = down_resample(signal, m_factor)
+        final_signal = conv(resampeld_signal, filter)
+        return final_signal
+
+    if m_factor > 0 and l_factor > 0:
+        resampeld_signal = up_resample(signal, l_factor)
+        filter = self.filter_low_pass(stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1, half_list, full_list)
+        final_signal = down_resample(conv(resampeld_signal, filter), m_factor)
+        return final_signal
+    else:
+        return "error"
+
+
+
+
+
 
 
 
