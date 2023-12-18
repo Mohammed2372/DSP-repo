@@ -75,6 +75,7 @@ class FilterApp:
         fs = float(self.fs_entry.get())
 
         # Assume you have a signal array, replace this with your actual signal
+        points = []
         signal = points
 
         filter_type = self.filter_type_var.get()
@@ -83,8 +84,8 @@ class FilterApp:
                                                stop_band_att, fs, filter_type)
 
         # Save the filtered signal to a file
-        filtered_file_path = "filtered_signal.txt"
-        self.save_filtered_signal_to_file(filtered_signal, filtered_file_path)
+        # filtered_file_path = "filtered_signal.txt"
+        # self.save_filtered_signal_to_file(filtered_signal, filtered_file_path)
 
         # split x and y
         x_values = []
@@ -93,18 +94,19 @@ class FilterApp:
             x_values.append(pair[0])
             y_values.append(pair[1])
 
+        conv_x = []
+        conv_y = []
         # Multiply signal with the filter only if the checkbox is checked
         if self.use_filter_checkbox_var.get():
             signal_tuple = [list(t) for t in signal]
             filter_tuple = [list(t) for t in filtered_signal]
             filter_conv = self.conv(signal_tuple, filter_tuple)
 
-        # split conv result in x and y
-        print(filter_conv)
-        conv_x = []
-        conv_y = []
-        for i in filter_conv:
-            conv_x.append(i[0])
+            # split conv result in x and y
+            # print(filter_conv)
+            for i in filter_conv:
+                conv_x.append(i[0])
+
             conv_y.append(i[1])
 
         # Compare the filtered file with the chosen file for comparison
@@ -117,7 +119,7 @@ class FilterApp:
 
         # Plot the filtered signal
         # self.plot_signal(signal, filtered_signal)
-        print(filter_conv)
+        # print(filter_conv)
 
     def choosing_filter(self, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
                         filter_type):
@@ -525,7 +527,6 @@ class FilterApp:
     def conv(self, signal, filter):
         # print("signal:", signal)
         # print("filter:", filter)
-        # res = []
         # n = len(signal) + len(filter) - 1
         # result = [0] * n
         # signal_padded = [0] * (len(filter) - 1) + signal + [0] * (len(filter) - 1)
@@ -539,14 +540,21 @@ class FilterApp:
         #         # print(f"Filter element: {float(filter[j][1])}")
         #     res.append(result[i])
 
-        leng = len(signal) + len(filter) - 1
-        result_i = [0] * leng
-        signal_padded = [0] * (len(filter) - 1) + signal + [0] * (len(filter) - 1)
-        for i in range(leng):
-            for j in range(len(filter)):
-                result_i[i] += signal_padded[i - j + len(filter) - 1] * filter[j]
-            res.append(result_i[i])
-        return res
+        # Check if the input lists are valid
+        if not isinstance(signal, list) or not isinstance(filter, list):
+            raise ValueError("Both signal and filter must be lists.")
+
+        # Check if the filter length is less than or equal to the signal length
+        if len(filter) > len(signal):
+            raise ValueError("Filter length must be less than or equal to signal length.")
+
+        result_length = len(signal) - len(filter) + 1
+        result = [0] * result_length
+
+        for i in range(result_length):
+            result[i] = sum(map(int, signal[i:i + len(filter)]))  # Convert each element to int before summing
+
+        return result
 
     def up_resample(self, signal, l_factor):
         upscaled = []
