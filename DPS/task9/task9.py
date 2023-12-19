@@ -114,7 +114,6 @@ class FilterApp:
         conv_y = []
         # Multiply signal with the filter only if the checkbox is checked
         global filter_conv
-        print(points)
         if self.use_filter_checkbox_var.get() and points:
             filter_tuple = [list(t) for t in filtered_signal]
             filter_conv = self.conv(points, filter_tuple)
@@ -129,8 +128,7 @@ class FilterApp:
             print("Please choose a file for comparison.")
 
         # Plot the filtered signal
-        self.plot_signal(filter_conv)
-        print(filter_conv)
+        # self.plot_signal(filter_conv)
 
     def choosing_filter(self, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
                         filter_type):
@@ -668,8 +666,6 @@ class FilterApp:
                 f += 1
 
             # down
-            print("new_signal" ,new_signal)
-            print("new_signal len", len(new_signal))
 
             resampled_signal = self.conv(new_signal, filter_coeff)
 
@@ -678,26 +674,21 @@ class FilterApp:
             for i in range(len(new_signal2)):
                  new_xs.append(filter_coeff[0][0] + i)
 
-            print("new_signal2", new_signal2)
-            print("new_signal2 len", len(new_signal2))
-            print("x", new_xs)
-            print("x len", len(new_xs))
-
-
             up_down_signal.append(new_xs)
             up_down_signal.append(new_signal2)
             self.compare_files(self.compare_file_path, up_down_signal[0], up_down_signal[1])
 
+            print("up_down_signal", up_down_signal)
+            print("up_down_signal len", len(up_down_signal))
+            print("up_down_signal [0]", up_down_signal[0])
+            print("up_down_signal [0] len", len(up_down_signal[0]))
+            print("up_down_signal[1]", up_down_signal[1])
+            print("up_down_signal [1] len", len(up_down_signal[1]))
 
             return up_down_signal
 
         else:
             return "error"
-
-
-
-
-
 
     def plot_signal(self, filtered_signal):
         filtered_x = [point[0] for point in filtered_signal]
