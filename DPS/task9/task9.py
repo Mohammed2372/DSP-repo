@@ -22,6 +22,21 @@ class FilterApp:
                                                     command=self.toggle_filter_options)
         use_low_pass_only_checkbox.pack()
 
+        # labels for l and m factors
+        self.l_factor_label = tk.Label(root, text="Enter L factor:")
+        self.l_factor_entry = self.create_entry(root, "enter L factor")
+        self.m_factor_label = tk.Label(root, text="Enter M factor:")
+        self.m_factor_entry = self.create_entry(root, "enter M factor")
+        self.l_factor_entry.pack()
+        self.m_factor_entry.pack()
+        self.m_factor_entry["state"] = "disabled"  # Initially disabled
+        self.l_factor_entry["state"] = "disabled"  # Initially disabled
+
+        # button for sampling
+        self.samplig_button = ttk.Button(root, text="sampling", command=lambda: self.resampling(signal, float(self.stop_band_att_entry.get()), float(self.transition_width_entry.get())
+                                                                                                , float(self.fs_entry.get()), float(self.passband_edge_freq_1_entry.get())))
+        self.samplig_button.pack()
+
         # Option menu for choosing filter type
         filter_type_label = ttk.Label(root, text="Choose Filter Type:")
         filter_type_label.pack()
@@ -75,8 +90,9 @@ class FilterApp:
         fs = float(self.fs_entry.get())
 
         # Assume you have a signal array, replace this with your actual signal
-        points = []
-        signal = points
+        if points:
+            global signal
+            signal = points
 
         filter_type = self.filter_type_var.get()
 
@@ -97,29 +113,24 @@ class FilterApp:
         conv_x = []
         conv_y = []
         # Multiply signal with the filter only if the checkbox is checked
-        if self.use_filter_checkbox_var.get():
-            signal_tuple = [list(t) for t in signal]
+        global filter_conv
+        print(points)
+        if self.use_filter_checkbox_var.get() and points:
             filter_tuple = [list(t) for t in filtered_signal]
-            filter_conv = self.conv(signal_tuple, filter_tuple)
+            filter_conv = self.conv(points, filter_tuple)
 
-            # split conv result in x and y
-            # print(filter_conv)
-            for i in filter_conv:
-                conv_x.append(i[0])
 
-            conv_y.append(i[1])
+
 
         # Compare the filtered file with the chosen file for comparison
-        if self.use_filter_checkbox_var.get():
-            self.compare_files((self.compare_file_path, conv_x, conv_y))
-        elif self.compare_file_path:
+        if self.compare_file_path and not self.use_filter_checkbox_var:
             self.compare_files(self.compare_file_path, x_values, y_values)
         else:
             print("Please choose a file for comparison.")
 
         # Plot the filtered signal
-        # self.plot_signal(signal, filtered_signal)
-        # print(filter_conv)
+        self.plot_signal(filter_conv)
+        print(filter_conv)
 
     def choosing_filter(self, passband_edge_freq_1, passband_edge_freq_2, transition_width, stop_band_att, fs,
                         filter_type):
@@ -175,7 +186,6 @@ class FilterApp:
                     hd = 2 * new_fc
                 else:
                     hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
-
                 w = 0.54 + 0.5 * math.cos(2 * math.pi * i / n)
                 hdTw = hd * w
                 half_list.append(hdTw)
@@ -186,13 +196,11 @@ class FilterApp:
                 n += 1
             n_for_loop = int((np.abs(n) - 1) / 2)
             new_fc = (passband_edge_freq_1 + (transition_width / 2)) / fs
-
             for i in range(n_for_loop + 1):
                 if i == 0:
                     hd = 2 * new_fc
                 else:
                     hd = (2 * new_fc) * (math.sin(2 * math.pi * new_fc * i) / (2 * math.pi * new_fc * i))
-
                 print(i)
                 w = 0.54 + 0.46 * math.cos(2 * math.pi * i / n)
                 print(hd)
@@ -504,6 +512,8 @@ class FilterApp:
             self.filter_type_menu["menu"].delete(0, "end")  # Clear existing options
             self.filter_type_menu["menu"].add_command(label="low_pass",
                                                       command=tk._setit(self.filter_type_var, "low_pass"))
+            self.l_factor_entry["state"] = "normal"
+            self.m_factor_entry["state"] = "normal"
         else:
             # turn check box off
             self.use_filter_checkbox_var.set(0)  # Set "Use Filter" checkbox to true
@@ -519,50 +529,59 @@ class FilterApp:
             self.filter_type_menu["menu"].add_command(label="stop_pass",
                                                       command=tk._setit(self.filter_type_var, "stop_pass"))
 
+            self.l_factor_entry["state"] = "disabled"
+            self.m_factor_entry["state"] = "disabled"
+
     def multiply_signal_with_filter(self, signal, filter):
         # Perform element-wise multiplication of signal and filter
         return [(point[0], point[1] * filter_value) for point, filter_value in zip(signal, filter)]
 
     # apply the filter on signal
     def conv(self, signal, filter):
-        # print("signal:", signal)
-        # print("filter:", filter)
-        # n = len(signal) + len(filter) - 1
-        # result = [0] * n
-        # signal_padded = [0] * (len(filter) - 1) + signal + [0] * (len(filter) - 1)
-        #
-        #
-        # for i in range(n):
-        #     for j in range(len(filter)):
-        #         result[i] += signal_padded[i - j + len(filter) - 1] * float(filter[j][1])
-        #         # print(f"Index: {i - j + len(filter) - 1}")
-        #         # print(f"Signal element: {signal_padded[i - j + len(filter) - 1]}")
-        #         # print(f"Filter element: {float(filter[j][1])}")
-        #     res.append(result[i])
 
-        # Check if the input lists are valid
-        if not isinstance(signal, list) or not isinstance(filter, list):
-            raise ValueError("Both signal and filter must be lists.")
+        x_values_signal = []
+        y_values_signal = []
+        for pair in signal:
+            x_values_signal.append(pair[0])
+            y_values_signal.append(pair[1])
+            
+        x_values_filter = []
+        y_values_filter = []
+        for pair in filter:
+            x_values_filter.append(pair[0])
+            y_values_filter.append(pair[1])
 
-        # Check if the filter length is less than or equal to the signal length
-        if len(filter) > len(signal):
-            raise ValueError("Filter length must be less than or equal to signal length.")
+        filterd =[]
+        leng = len(filter) + len(signal) - 1
+        filter_i = [0] * leng
+        signal_padded = [0] * (len(y_values_filter) - 1) + y_values_signal + [0] * (len(y_values_filter) - 1)
 
-        result_length = len(signal) - len(filter) + 1
-        result = [0] * result_length
 
-        for i in range(result_length):
-            result[i] = sum(map(int, signal[i:i + len(filter)]))  # Convert each element to int before summing
+        for i in range(leng):
+            for j in range(len(y_values_filter )):
+                filter_i[i] += signal_padded[i - j + len(y_values_filter) - 1] * y_values_filter[j]
 
+            filterd.append(filter_i[i])
+
+        res = []
+        result = []
+        for i in range(leng):
+            res.append(x_values_filter[0] + i)
+        result.append(res)
+        result.append(filterd)
+
+        self.compare_files(self.compare_file_path, result[0],result[1])
         return result
 
     def up_resample(self, signal, l_factor):
-        upscaled = []
-        for i in range(len(signal)):
-            upscaled.append(signal[i])
-            for j in range(l_factor - 1):
-                upscaled.append(signal[i] * (l_factor - 1 - j) / l_factor)
-        return upscaled
+        zeros_num = int(l_factor) - 1
+        result = []
+        for i in range(len(signal) ):
+            result.append(signal[i])
+            if i != len(signal) - 1:
+                for j in range(zeros_num):
+                    result.append(0)
+        return result
 
     def down_resample(self, signal, m_factor):
         downscaled = []
@@ -572,43 +591,117 @@ class FilterApp:
             downscaled.append(signal[i])
         return downscaled
 
-    def resampling(self, signal, l_factor, m_factor, stop_band_att, normalized_fs, transition_width, fs,
-                   passband_edge_freq_1, half_list, full_list):
+    def resampling(self, signal, stop_band_att, transition_width, fs,
+                   passband_edge_freq_1):
         resampled_signal = []
         filter_coeff = []
         final_signal = []
+        l_factor = float(self.l_factor_entry.get())
+        m_factor = float(self.m_factor_entry.get())
+        normalized_fs = transition_width / fs
+        full_list = []
+        half_list = []
+        new_xs =[]
+        new_signal = []
+        up_down_signal = []
+        f = 0
 
+        ##
+        x_values_signal = []
+        y_values_signal = []
+        for pair in signal:
+            x_values_signal.append(pair[0])
+            y_values_signal.append(pair[1])
+
+        # up sampling
         if l_factor > 0 and m_factor == 0:
-            resampled_signal = self.up_resample(signal, l_factor)
+
             filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
                                                 passband_edge_freq_1, half_list, full_list)
-            final_signal = self.conv(resampled_signal, filter_coeff)
+
+            resampled_signal = self.up_resample(y_values_signal, l_factor)
+
+            for i in range(len(resampled_signal)):
+                new_xs.append(filter_coeff[0][0] + i)
+            for j in new_xs:
+                new_signal.append((j, resampled_signal[f]))
+                f += 1
+
+
+
+            final_signal = self.conv(list(new_signal), filter_coeff)
+            self.compare_files(self.compare_file_path, final_signal[0], final_signal[1])
+
             return final_signal
 
+        # down sampling
         if m_factor > 0 and l_factor == 0:
             filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
                                                 passband_edge_freq_1, half_list, full_list)
-            resampled_signal = self.down_resample(signal, m_factor)
-            final_signal = self.conv(resampled_signal, filter_coeff)
-            return final_signal
+            resampled_signal = self.conv(signal, filter_coeff)
 
+            final_signal = self.down_resample(resampled_signal[1], m_factor)
+
+            for i in range(len(final_signal)):
+                new_xs.append(resampled_signal[0][0] + i)
+
+            new_signal.append(new_xs)
+            new_signal.append(final_signal)
+            self.compare_files(self.compare_file_path, new_xs, final_signal)
+            return new_signal
+
+        #up and down
         if m_factor > 0 and l_factor > 0:
-            resampled_signal = self.up_resample(signal, l_factor)
+
+           # up
             filter_coeff = self.filter_low_pass(stop_band_att, normalized_fs, transition_width, fs,
                                                 passband_edge_freq_1, half_list, full_list)
-            final_signal = self.down_resample(self.conv(resampled_signal, filter_coeff), m_factor)
-            return final_signal
+
+            resampled_signal = self.up_resample(y_values_signal, l_factor)
+
+
+            f = 0
+            for i in range(len(resampled_signal)):
+                new_xs.append(filter_coeff[0][0] + i)
+            for j in new_xs:
+                new_signal.append((j, resampled_signal[f]))
+                f += 1
+
+            # down
+            print("new_signal" ,new_signal)
+            print("new_signal len", len(new_signal))
+
+            resampled_signal = self.conv(new_signal, filter_coeff)
+
+            new_signal2 = self.down_resample(resampled_signal[1], m_factor)
+            new_xs = []
+            for i in range(len(new_signal2)):
+                 new_xs.append(filter_coeff[0][0] + i)
+
+            print("new_signal2", new_signal2)
+            print("new_signal2 len", len(new_signal2))
+            print("x", new_xs)
+            print("x len", len(new_xs))
+
+
+            up_down_signal.append(new_xs)
+            up_down_signal.append(new_signal2)
+            self.compare_files(self.compare_file_path, up_down_signal[0], up_down_signal[1])
+
+            return up_down_signal
+
         else:
             return "error"
 
-    def plot_signal(self, original_signal, filtered_signal):
-        original_x = [point[0] for point in original_signal]
-        original_y = [point[1] for point in original_signal]
 
+
+
+
+
+    def plot_signal(self, filtered_signal):
         filtered_x = [point[0] for point in filtered_signal]
         filtered_y = [point[1] for point in filtered_signal]
 
-        plt.plot(original_x, original_y, label="Original Signal")
         plt.plot(filtered_x, filtered_y, label="Filtered Signal")
         plt.xlabel("Time or Frequency")
         plt.ylabel("Amplitude")
