@@ -688,6 +688,7 @@ class FilterApp:
             up_down_signal.append(new_signal2)
             self.compare_files(self.compare_file_path, up_down_signal[0], up_down_signal[1])
 
+
             return up_down_signal
 
         else:
