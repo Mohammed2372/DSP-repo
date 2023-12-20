@@ -120,9 +120,8 @@ class FilterApp:
 
 
 
-
         # Compare the filtered file with the chosen file for comparison
-        if self.compare_file_path and not self.use_filter_checkbox_var:
+        if self.compare_file_path:
             self.compare_files(self.compare_file_path, x_values, y_values)
         else:
             print("Please choose a file for comparison.")
@@ -315,7 +314,7 @@ class FilterApp:
                 full_list.append((j, half_list[0]))
             else:
                 full_list.append((j, half_list[j]))
-
+        print(full_list)
         return full_list
 
     def filter_band_pass(self, stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1,
@@ -382,8 +381,8 @@ class FilterApp:
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 - (transition_width / 2) / fs
-            new_fc2 = passband_edge_freq_2 + (transition_width / 2) / fs
+            new_fc1 = (passband_edge_freq_1 - (transition_width / 2)) / fs
+            new_fc2 = (passband_edge_freq_2 + (transition_width / 2)) / fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -404,7 +403,7 @@ class FilterApp:
                 full_list.append((j, half_list[0]))
             else:
                 full_list.append((j, half_list[j]))
-
+        print(full_list)
         return full_list
 
     def filter_stop_pass(self, stop_band_att, normlized_fs, transition_width, fs, passband_edge_freq_1,
@@ -413,8 +412,8 @@ class FilterApp:
             n = math.ceil(0.9 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2) / fs
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2) / fs
+            new_fc1 = (passband_edge_freq_1 + (transition_width / 2)) / fs
+            new_fc2 = (passband_edge_freq_2 - (transition_width / 2)) / fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -432,8 +431,8 @@ class FilterApp:
             n = math.ceil(3.1 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2) / fs
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2) / fs
+            new_fc1 = (passband_edge_freq_1 + (transition_width / 2)) / fs
+            new_fc2 = (passband_edge_freq_2 - (transition_width / 2)) / fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -451,8 +450,8 @@ class FilterApp:
             n = math.ceil(3.3 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2) / fs
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2) / fs
+            new_fc1 = (passband_edge_freq_1 + (transition_width / 2)) / fs
+            new_fc2 = (passband_edge_freq_2 - (transition_width / 2)) / fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -470,8 +469,8 @@ class FilterApp:
             n = math.ceil(5.5 / normlized_fs)
             if n % 2 == 0:
                 n += 1
-            new_fc1 = passband_edge_freq_1 + (transition_width / 2) / fs
-            new_fc2 = passband_edge_freq_2 - (transition_width / 2) / fs
+            new_fc1 = (passband_edge_freq_1 + (transition_width / 2)) / fs
+            new_fc2 = (passband_edge_freq_2 - (transition_width / 2)) / fs
             n_for_loop = int((np.abs(n) - 1) / 2)
 
             for i in range(n_for_loop + 1):
@@ -492,7 +491,7 @@ class FilterApp:
                 full_list.append((j, half_list[0]))
             else:
                 full_list.append((j, half_list[j]))
-
+        print(full_list)
         return full_list
 
     def toggle_filter_button(self):
@@ -574,7 +573,7 @@ class FilterApp:
     def up_resample(self, signal, l_factor):
         zeros_num = int(l_factor) - 1
         result = []
-        for i in range(len(signal) ):
+        for i in range(len(signal)):
             result.append(signal[i])
             if i != len(signal) - 1:
                 for j in range(zeros_num):

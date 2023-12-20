@@ -19,7 +19,7 @@ class DSPApplication:
         self.Fs = tk.IntVar()
         self.newFs = tk.IntVar()
 
-        if self.newFs.get() < 2*self.maxF:
+        if int(self.newFs.get()) < 2*int(self.maxF.get()):
             print("error, this process can't be done because newFs is lower than half of maxFs")
             return
 
@@ -267,7 +267,7 @@ class DSPApplication:
             if (self.newFs.get() > self.Fs.get()):
                 filterdA = filter.upSampling(filterdA,self.newFs.get() / self.Fs.get())
             else:
-                filterdA = downSampling(filterdA, self.Fs.get() / self.newFs.get())
+                filterdA = self.downSampling(filterdA, self.Fs.get() / self.newFs.get())
         before = np.array(filterdA)
         after = before - np.mean(before)
         min_value = min(after)
